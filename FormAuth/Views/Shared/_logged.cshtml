@@ -1,0 +1,28 @@
+﻿<ul class="nav navbar-nav navbar-right">
+    <li>@Html.RouteLink("О сайте", new { controller = "Home", action = "About", area = "" }, new { @class = "" })</li>
+@if (Request.IsAuthenticated)
+{
+    <li class="dropdown">
+        <a href="#" class="dropdown-togglen" data-toggle="dropdown">Кабинет @User.Identity.Name <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+            <li>@Html.RouteLink("Личный кабинет", new { controller = "Account", action = "UserPanel" })</li>
+            <li class="divider"></li>
+            <li>@Html.RouteLink("Выход", new { controller = "Account", action = "Logout" })</li>
+        </ul>
+    </li>
+    
+}
+else
+{
+    <li class="dropdown">
+        <a href="#" class="dropdown-togglen" data-toggle="dropdown">Вход<b class="caret"></b></a>
+        <ul class="dropdown-menu">
+            <li>@Html.RouteLink("Вход", new { controller = "Account", action = "Login", area = "" })</li>
+            <li>@Html.RouteLink("Регистрация", new { controller = "Account", action = "Register", area = "" })</li>
+            <li class="divider"></li>
+            <li>@Html.RouteLink("Правила для пользователей", new { controller = "Account", action = "Login"})</li>
+        </ul>
+    </li>
+}
+
+</ul>

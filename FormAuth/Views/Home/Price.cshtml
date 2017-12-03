@@ -1,0 +1,27 @@
+﻿@model IEnumerable<FormAuth.Models.Price>
+@{
+    ViewBag.Title = "Price";
+}
+
+<h2>Price</h2>
+
+<table class="table table-hover table-striped">
+    <tbody>
+        <tr>
+            <th class="text-center">Номер</th>
+            <th class="text-center">Товар\Услуга</th>
+            <th class="text-center">Стоимость</th>
+            <th></th>
+        </tr>
+        @foreach (FormAuth.Models.Price p in Model)
+        {
+            <tr class="text-center">
+                <td>@p.id</td>
+                <td>@p.item</td>
+                <td>@p.cash</td>
+                <td>@Html.RouteLink("Редактировать", new { controller = "Home", action = "EditPrice", id = p.id})</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

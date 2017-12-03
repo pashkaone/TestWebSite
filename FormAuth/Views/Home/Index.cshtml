@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Это сайт</h1>
+    <p class="lead">Создан он с помощью ASP.NET, HTML, CSS и JavaScript.</p>
+    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    @if (ViewBag.catchall != null)
+    {
+        <div class="label-info col-md-12">Дополнительные параметры: @ViewBag.catchall</div>
+    }
+
+    <div class="col-md-4">
+        <h2>Почему мы?</h2>
+        <p>
+            Потому что.
+        </p>
+        <p><a class="btn btn-default" href="/">Learn more &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Почему не они?</h2>
+        <p>Ну потому.</p>
+        <p><a class="btn btn-default" href="/">Learn more &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Что-то ещё?</h2>
+        <p>Нет.</p>
+        <p><a class="btn btn-default" href="/">Learn more &raquo;</a></p>
+    </div>
+</div>

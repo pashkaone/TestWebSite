@@ -1,0 +1,34 @@
+﻿@model FormAuth.Models.LoginModel
+
+@{
+    ViewBag.Title = "Вход";
+}
+
+<h2>Вход на сайт</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div>
+        @Html.ValidationSummary()
+        <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+        <p>
+            <label>Email</label><br />
+
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon3"> @@ </span>
+                @Html.TextBox("Email", "", new { @class="form-control", @placeholder="Username"})
+            </div>
+        </p>
+        <p>
+            <label>Пароль</label><br />
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon3"> * </span>
+                @Html.Password("Password", "", new { @class = "form-control", @placeholder = "Password" })
+            </div>
+        </p>
+        <p><button class="btn btn-success" type="submit">Войти</button></p>
+    </div>
+}
