@@ -7,6 +7,8 @@ using System.ComponentModel.DataAnnotations;
 using FormAuth.Models;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity;
 
 public class RolesController : Controller
 {
@@ -18,6 +20,7 @@ public class RolesController : Controller
         }
     }
 
+    [Authorize(Roles = "Admin")]
     public ActionResult Index()
     {
         return View(RoleManager.Roles);
@@ -49,6 +52,7 @@ public class RolesController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Edit(string id)
     {
         ApplicationRole role = await RoleManager.FindByIdAsync(id);
@@ -82,7 +86,6 @@ public class RolesController : Controller
           return View(model);
       } 
 
-
     public async Task<ActionResult> Delete(string id)
     {
         ApplicationRole role = await RoleManager.FindByIdAsync(id);
@@ -92,4 +95,20 @@ public class RolesController : Controller
         }
         return RedirectToAction("Index");
     }
+
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> EditRoles()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> EditRoles(string roleId, ApplicationContext context)
+    {
+  
+        return RedirectToAction("EditRoles");
+    }
 }
+
+   

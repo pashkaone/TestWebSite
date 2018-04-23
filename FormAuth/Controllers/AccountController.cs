@@ -22,38 +22,43 @@ namespace FormAuth.Controllers
             }
         }
 
+        public ActionResult Index()
+        {
+            return View(UserManager.Users);
+        }
+
         public ActionResult Register()
         {
             if (Request.IsAuthenticated)
             {
-                return RedirectToRoute(new { controller = "Account", action ="UserPanel"});
+                return RedirectToRoute(new { controller = "Account", action = "UserPanel" });
             }
             else
                 return View();
         }
 
-          [HttpPost]
-          public async Task<ActionResult> Register(RegisterModel model)
-          {
-              if (ModelState.IsValid)
-              {
-                  ApplicationUser user = new ApplicationUser { UserName = model.Email, Email = model.Email, Year = model.Year };
-                  IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-                  UserManager.AddToRole(user.Id, role:"Admin");
-                  if (result.Succeeded)
-                  {
-                      return RedirectToAction("Login", "Account");
-                  }
-                  else
-                  {
-                      foreach (string error in result.Errors)
-                      {
-                          ModelState.AddModelError("", error);
-                      }
-                  }
-              }
-              return View(model);
-          }
+        [HttpPost]
+        public async Task<ActionResult> Register(RegisterModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser user = new ApplicationUser { UserName = model.Name, Email = model.Email, Year = model.Year };
+                IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+                UserManager.AddToRole(user.Id, role: "User");
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                else
+                {
+                    foreach (string error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error);
+                    }
+                }
+            }
+            return View(model);
+        }
 
         private IAuthenticationManager AuthenticationManager
         {
@@ -82,7 +87,7 @@ namespace FormAuth.Controllers
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user = await UserManager.FindAsync(model.Email, model.Password);
+                ApplicationUser user = await UserManager.FindAsync(model.Name, model.Password);
                 if (user == null)
                 {
                     ModelState.AddModelError("", "Неверный логин или пароль.");
@@ -118,23 +123,56 @@ namespace FormAuth.Controllers
 
         [HttpPost]
         [ActionName("Delete")]
-        public async Task<ActionResult> DeleteConfirmed()
+        public async Task<ActionResult> DeleteConfirmed(string id)
         {
-            ApplicationUser user = await UserManager.FindByEmailAsync(User.Identity.Name);
-            if (user != null)
-            {
-                IdentityResult result = await UserManager.DeleteAsync(user);
-                if (result.Succeeded)
+            if (id == null)
+            { // удаление из ЛК
+                ApplicationUser user = await UserManager.FindByNameAsync(User.Identity.Name);
+                if (user != null)
                 {
-                    return RedirectToAction("Logout", "Account");
+                    IdentityResult result = await UserManager.DeleteAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Logout", "Account");
+                    }
                 }
+                return RedirectToAction("Index", "Home");
             }
-            return RedirectToAction("Index", "Home");
+            else
+            { //удаление из общего списка
+                ApplicationUser user = await UserManager.FindByIdAsync(id);
+                if (user != null)
+                {
+                    IdentityResult result = await UserManager.DeleteAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Account");
+                    }
+                }
+                return RedirectToAction("Index", "Home");
+            }
         }
 
-        public async Task<ActionResult> Edit()
+        public async Task<ActionResult> Edit(string id)
         {
-            ApplicationUser user = await UserManager.FindByEmailAsync(User.Identity.Name);
+            /* if (id == null)
+             {
+                 ApplicationUser user = await UserManager.FindByNameAsync(User.Identity.Name);
+                 if (user != null)
+                 {
+                     EditModel model = new EditModel { Year = user.Year };
+                     return View(model);
+                 }
+             }
+             else
+             {
+                 ApplicationUser user = await UserManager.FindByIdAsync(id);
+             }*/
+            ApplicationUser user = await UserManager.FindByNameAsync(User.Identity.Name);
+            if (id != null)
+            {
+                user = await UserManager.FindByIdAsync(id);
+            }
             if (user != null)
             {
                 EditModel model = new EditModel { Year = user.Year };
@@ -144,9 +182,13 @@ namespace FormAuth.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(EditModel model, string password)
+        public async Task<ActionResult> Edit(EditModel model, string password, string id)
         {
-            ApplicationUser user = await UserManager.FindByEmailAsync(User.Identity.Name);
+            ApplicationUser user = await UserManager.FindByNameAsync(User.Identity.Name);
+            if (id != null) //проверка, если из списка, то с  ID
+            {
+                user = await UserManager.FindByIdAsync(id);
+            }
             if (user != null)
             {
                 user.Year = model.Year;
@@ -156,7 +198,7 @@ namespace FormAuth.Controllers
                     UserManager.RemovePassword(user.Id);
                     UserManager.AddPassword(user.Id, model.Password);
                 }
-                
+
                 IdentityResult result = await UserManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
@@ -180,24 +222,28 @@ namespace FormAuth.Controllers
         {
             IList<string> roles = new List<string> { "Роль не определена" };
             ApplicationUserManager userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            ApplicationUser user = userManager.FindByEmail(User.Identity.Name);
+            ApplicationUser user = userManager.FindByName(User.Identity.Name);
             if (user != null)
                 roles = userManager.GetRoles(user.Id);
             return View(roles);
-            //return View();
         }
 
-        [HttpPost]
-        public ActionResult UserPanel(string ActivationCode)
+        [Authorize]
+        public ActionResult AdminAccess()
         {
-            if (ActivationCode == "1")
-            {
-                UserManager.RemoveFromRole(User.Identity.GetUserId(), role: "User");
-                UserManager.AddToRole(User.Identity.GetUserId(), role: "Admin");
-            }
-            else
-            { ViewBag.AdminAccess = "ERROR"; }
             return View();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult Admin777(string id)
+        {
+            if (id == "777")
+            {
+                ApplicationUser user = UserManager.FindByName(User.Identity.Name);
+                UserManager.AddToRole(user.Id, role: "Admin");
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }

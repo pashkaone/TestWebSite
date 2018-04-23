@@ -1,34 +1,30 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Панель пользователя" + User.Identity.Name;
 }
-
-
     <div class="jumbotron">
         <h1>Панель управления</h1>
         <h3>Ваш логин: @User.Identity.Name</h3>
         Изменить данные пользователя: @Html.RouteLink("Edit", new { controller = "Account", action = "Edit" })
         <br />
-        Ваша роль: @if (User.IsInRole("Admin"))
-        { <b>АДМИНИСТРАТОР</b> }
-        else if (User.IsInRole("User"))
-        { <b>Пользователь</b>}
-    </div>
-<div class="row">
-    <div class="col-md-6">
-        @if (User.IsInRole("Admin"))
+        Вы находитесь в ролях:
+        <br />
+        @if (Model != null)
         {
-            Html.RouteLink("Править роли", new { controller = "Roles", action = "Index" });
-        }
-        else
-        {
-            using (Html.BeginForm())
+            foreach (var role in Model)
             {
-                @ViewBag.Adminaccess
-            @Html.Label("Стать администратором") 
-            @Html.TextBox("ActivationCode", "", new { @class = "form-control", @placeholder = "КОД ДОСТУПА" })
-            <p><button class="btn btn-success" type="submit">Стать админом</button></p>
+                @role <br />
             }
         }
+       <hr />
+    </div>
+<div class="row">
+    <div class="col-md-4 text-center">
+       Мои посты
+    </div>
+    <div class="col-md-4 text-center">
+        Инфа полезная.
+    </div>
+    <div class="col-md-4 text-center" >
+        @Html.ActionLink("Удалить аккаунт", "Delete")
     </div>
 </div>

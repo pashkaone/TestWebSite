@@ -1,0 +1,15 @@
+﻿@model FormAuth.Models.LoginModel
+@{
+    ViewBag.Title = "EditRoles";
+}
+
+<h2>Изменение ролей пользователей</h2>
+
+<div class="row">
+    @using (Html.BeginForm())
+    {
+        @Html.TextBox("users", "", new { @class = "form-control", @placeholder = "Пользователь" }) <br />
+        @Html.TextBox("roleId", "", new { @class = "form-control", @placeholder = "Роль" }) <br />
+    <p><button class="btn btn-success" type="submit">Добавить роль</button></p> <p><button class="btn btn-success" type="submit">Просмотреть роли</button></p>
+    }
+</div>
